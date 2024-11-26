@@ -1,13 +1,19 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace DataAccess
+namespace Core
 {
     public class WeatherData
     {
-        public int Id { get; set; }
-        public DateTime Datum { get; set; }
-        public string Plats { get; set; } // "Ute" eller "Inne"
-        public double Temperatur { get; set; }
-        public double Luftfuktighet { get; set; }
+        [Key]
+        public int Id { get; set; }  // Primärnyckel för WeatherData
+
+        public DateTime Date { get; set; }
+
+        public string Location { get; set; }  // "Ute" eller "Inne"
+
+        public double Temperature { get; set; }
+
+        public double Humidity { get; set; }
     }
 }

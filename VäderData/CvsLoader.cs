@@ -1,40 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using DataAccess;
 
 namespace Core
 {
-    public class CsvLoader
+    public class CvsLoader
     {
-        public static void LoadData(string filePath, WeatherContext context)
+        public static List<WeatherData> LoadWeatherDataFromCsv(string filePath)
         {
-            if (context.WeatherData.Any()) return; // Om data redan finns, läs inte in igen.
-
-            var lines = File.ReadAllLines(filePath);
             var weatherDataList = new List<WeatherData>();
 
-            foreach (var line in lines)
+            var lines = File.ReadAllLines(filePath);
+            foreach (var line in lines.Skip(1))  // Första raden är rubrik
             {
-                var parts = line.Split(',');
+                var columns = line.Split(',');
 
-                var datum = DateTime.Parse(parts[0]);
-                var plats = parts[1];
-                var temperatur = double.Parse(parts[2], CultureInfo.InvariantCulture);
-                var luftfuktighet = double.Parse(parts[3], CultureInfo.InvariantCulture);
-
-                weatherDataList.Add(new WeatherData
+                var weatherData = new WeatherData
                 {
-                    Datum = datum,
-                    Plats = plats,
-                    Temperatur = temperatur,
-                    Luftfuktighet = luftfuktighet
-                });
+                    Date = DateTime.Parse(columns[0]),
+                    Location = columns[1],
+                    Temperature = double.Parse(columns[2]),
+                    Humidity = double.Parse(columns[3])
+                };
+
+                weatherDataList.Add(weatherData);
             }
 
-            context.WeatherData.AddRange(weatherDataList);
-            context.SaveChanges();
+            return weatherDataList;
         }
     }
 }
