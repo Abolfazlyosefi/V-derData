@@ -8,12 +8,17 @@ namespace Core
         [Key]
         public int Id { get; set; }  // Primärnyckel för WeatherData
 
-        public DateTime Date { get; set; }
+        [Required]
+        public DateTime Date { get; set; }  // Datum för mätningen
 
+        [Required]
+        [MaxLength(50)]
         public string Location { get; set; }  // "Ute" eller "Inne"
 
-        public double Temperature { get; set; }
+        [Required]
+        public double Temperature { get; set; }  // Temperatur vid mätningen
 
-        public double Humidity { get; set; }
+        [Required]
+        public double Humidity { get; set; }  // Luftfuktighet vid mätningen
     }
 }

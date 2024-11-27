@@ -1,6 +1,5 @@
 ﻿using System;
 using Core;
-using CsvHelper;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,46 +27,37 @@ namespace UI
             // Visa menyn för användaren
             menu.DisplayMenu();
 
-            // Exempel på medeltemperatur för utomhus på ett valt datum
-            Console.Write("Ange datum (yyyy-MM-dd): ");
+            // Här kan vi lägga till exempelanrop för nya funktioner:
+            // Exempel på att hämta medeltemperatur för inomhusdata för ett specifikt datum
+            Console.Write("Ange ett datum för inomhus medeltemperatur (yyyy-MM-dd): ");
             DateTime date = DateTime.Parse(Console.ReadLine());
-            Console.WriteLine($"Medeltemperatur utomhus: {weatherService.GetAverageTemperatureForDate(date, "Ute")} °C");
-
-            // Sortera dagar efter medeltemperatur (utomhus)
-            var sortedDays = weatherService.GetDaysSortedByTemperature("Ute");
-            foreach (var day in sortedDays)
-                Console.WriteLine($"{day.Date.ToShortDateString()}: {day.AverageTemp} °C");
-
-            // Visa meteorologisk höststart
-            var autumnStart = weatherService.GetMeteorologicalAutumnStart("Ute");
-            Console.WriteLine(autumnStart.HasValue ? $"Meteorologisk höst börjar: {autumnStart.Value.ToShortDateString()}" : "Höst ej funnen.");
-
-            // Medeltemperatur inomhus för ett valt datum
-            Console.Write("Ange datum (yyyy-MM-dd): ");
-            date = DateTime.Parse(Console.ReadLine());
-            Console.WriteLine($"Medeltemperatur inomhus: {weatherService.GetAverageIndoorTemperatureForDate(date)} °C");
-
-            // Sortera inomhusdata
-            Console.WriteLine("Sortering av varmaste till kallaste dag (inomhus):");
-            var sortedTemperatures = weatherService.GetSortedIndoorTemperatures();
-            foreach (var item in sortedTemperatures)
+            try
             {
-                Console.WriteLine($"{item.Date.ToString("yyyy-MM-dd")} - {item.AvgTemperature} °C");
+                var indoorAvgTemp = weatherService.GetAverageIndoorTemperatureForDate(date);
+                Console.WriteLine($"Medeltemperatur inomhus den {date.ToShortDateString()}: {indoorAvgTemp:F1}°C");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fel: {ex.Message}");
             }
 
-            Console.WriteLine("Sortering av torraste till fuktigaste dag (inomhus):");
-            var sortedHumidity = weatherService.GetSortedIndoorHumidity();
-            foreach (var item in sortedHumidity)
+            // Exempel på att hämta och skriva ut sorterade inomhustemperaturer
+            Console.WriteLine("\nSorterade inomhustemperaturer från varmast till kallast:");
+            var sortedIndoorTemps = weatherService.GetSortedIndoorTemperatures();
+            foreach (var item in sortedIndoorTemps)
             {
-                Console.WriteLine($"{item.Date.ToString("yyyy-MM-dd")} - {item.AvgHumidity}%");
+                Console.WriteLine($"{item.Date.ToShortDateString()} - {item.AvgTemperature:F1}°C");
             }
 
-            Console.WriteLine("Sortering av minst till störst risk för mögel (inomhus):");
+            // Exempel på att hämta och skriva ut mögelrisk för inomhusmiljöer
+            Console.WriteLine("\nSorterade dagar baserat på mögelrisk (från lägst till högst risk):");
             var sortedMoldRisk = weatherService.GetSortedMoldRisk();
             foreach (var item in sortedMoldRisk)
             {
-                Console.WriteLine($"{item.Date.ToString("yyyy-MM-dd")} - Risk: {item.MoldRisk:F2}");
+                Console.WriteLine($"{item.Date.ToShortDateString()} - Risk: {item.MoldRisk:F2}");
             }
+
+            // Menyn är redan hanterad genom att anropa menu.DisplayMenu(), så vi gör inget mer här i main.
         }
     }
 }
